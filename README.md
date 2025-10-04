@@ -4,7 +4,7 @@
 The project structure is initialized as the following..
 
 # mini-cloud-storage/
-  # backend/
+  # Backend/
     app.py
     requirments.txt
   # Frontend/
