@@ -9,4 +9,8 @@ The project structure is initialized as the following..
     requirments.txt
   # Frontend/
     index.html
+# Cloud Account Setup
+**Project name:** mini drive
+**Project ID:** mini-drive-474119
+**Cloud API's:** Enabled
     
