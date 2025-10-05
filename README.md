@@ -10,8 +10,8 @@ The project structure is initialized as the following..
   # Frontend/
     index.html
 # Cloud Account Setup
-## Project name: mini drive
-## Project ID: mini-drive-474119
-## Cloud API's: Enabled
+### Project name: mini drive
+### Project ID: mini-drive-474119
+### Cloud API's: Enabled
 ### Project number: 116077305191
     
