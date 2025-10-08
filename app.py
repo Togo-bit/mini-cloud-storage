@@ -1,0 +1,26 @@
+from flask import Flask, render_template, request
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+app = Flask(__name__)
+
+# Connect to Google Sheets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(creds)
+sheet = client.open("form_responses").sheet1  # replace with your sheet name
+
+@app.route('/', methods=['GET', 'POST'])
+def form():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        feedback = request.form['feedback']
+
+        # Append the data to Google Sheet
+        sheet.append_row([name, email, feedback])
+        return "✅ Form submitted successfully and saved to Google Sheets!"
+    return render_template('form.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
