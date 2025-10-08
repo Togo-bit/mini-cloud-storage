@@ -4,7 +4,7 @@
 The project structure is initialized as the following..
 
 # form-storage-app/
-  # templates
+  # templates/
     form.html
   # app.py
   # credentials
