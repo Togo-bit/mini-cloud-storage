@@ -4,10 +4,10 @@
 The project structure is initialized as the following..
 
 # form-storage-app/
-  # data/
-    form_data
-  # templates/
+  # templates
     form.html
-  # app
+  # app.py
+  # credentials
+  # requirments
 
     
