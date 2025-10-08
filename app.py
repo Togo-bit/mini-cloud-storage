@@ -6,7 +6,14 @@ app = Flask(__name__)
 
 # Connect to Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+import json, os
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Load credentials from environment variable instead of file
+google_creds_json = os.getenv("GOOGLE_CREDENTIALS")
+creds_dict = json.loads(google_creds_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 client = gspread.authorize(creds)
 sheet = client.open("form_responses").sheet1  # replace with your sheet name
 
@@ -24,3 +31,4 @@ def form():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
