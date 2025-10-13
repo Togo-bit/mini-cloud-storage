@@ -1,91 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in with Google</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clam Storage Form</title>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- Montserrat font -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
 
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
-      color: white;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    button {
-      background-color: white;
-      color: #444;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-    }
-  </style>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  background: url('Download-premium-image-of-Sand-beach-water-outdoors-nature_-by-Sasi-about-iphone-wallpaper-summer-abstract-mobile-wallpapers-iphone-wallpaper-beach-mobile-wallpaper-and-iphone-wallpaper-14897033.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(255,255,247,0.75), rgba(6,99,160,0.23));
+  pointer-events: none;
+}
+
+.form-container {
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(7px);
+  width: 480px;
+  max-width: 95vw;
+  padding: 30px 38px 44px 38px;
+  border-radius: 48px 48px 34px 34px / 62px 62px 48px 48px;
+  box-shadow: 0 10px 32px rgba(6,99,160, 0.15);
+  position: relative;
+  border: 2.5px solid #0663a0;
+  z-index: 2;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.logo-section img {
+  width: 190px;
+  height: auto;
+  margin-bottom: 0;
+  filter: drop-shadow(0 0 20px rgba(6,99,160,0.17));
+}
+
+.form-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #0663a0;
+  text-align: center;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+label.form-label {
+  font-weight: 700;
+  color: #0663a0;
+  margin-bottom: 8px;
+  letter-spacing: 0.4px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  border: 2px solid #b8d3e7;
+  background: #fafdff;
+  border-radius: 19px;
+  padding: 13px 17px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  font-family: 'Montserrat', sans-serif;
+  transition: border 0.3s, box-shadow 0.3s;
+  width: 100%;
+  resize: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  border-color: #0663a0;
+  box-shadow: 0 0 14px rgba(6,99,160,0.18);
+  outline: none;
+}
+
+::placeholder {
+  color: #77a8be;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(45deg, #0663a0, #3fb7df 80%);
+  border: none;
+  font-weight: 700;
+  font-size: 1.17rem;
+  padding: 13px;
+  border-radius: 27px;
+  box-shadow: 0 7px 19px rgba(63,183,223,0.23);
+  transition: background 0.3s, box-shadow 0.3s;
+  user-select: none;
+  margin-top: 10px;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #04476d, #35a2c3 85%);
+  box-shadow: 0 10px 24px rgba(6,99,160,0.24);
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 16px 3vw;
+    width: 98vw;
+    border-radius: 28px 28px 20px 20px / 38px 38px 27px 27px;
+  }
+  .logo-section img {
+    width: 120px;
+  }
+}
+</style>
 </head>
 <body>
-  <h1>Welcome 👋</h1>
-  <p>Please sign in with Google to continue.</p>
+<div class="d-flex justify-content-center align-items-center" style="min-height:100vh;width:100vw;position:relative;z-index:2;">
+  <div class="form-container">
+    <div class="logo-section">
+      <img src="C:\\Users\\thanmayee\\OneDrive\\Desktop\\New folder\\WhatsApp Image 2025-10-13 at 14.17.11_9d583f36.jpg " />
+    </div>
+    <div class="form-title">
+    <form method="POST" action="/">
+      <div class="mb-3">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" name="name" id="name" placeholder="Enter your full name" required />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" name="email" id="email" placeholder="Enter your email" required />
+      </div>
+      <div class="mb-3">
+        <label for="info" class="form-label">Information to Save</label>
+        <textarea name="info" id="info" rows="4" placeholder="Write the information you want to save..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
 
-  <button id="googleSignIn">Sign in with Google</button>
-
-  <script>
-    // 🔹 Replace these values with your own Firebase project config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBUS1ugKC0Ef87RxMsYL6CIopONg8-Z1Qw",
-      authDomain: "mini-drive-474119.firebaseapp.com",
-      projectId: "mini-drive-474119",
-      storageBucket: "mini-drive-474119.firebasestorage.app",
-      messagingSenderId: "116077305191",
-      appId: "1:116077305191:web:7054573d7ea0ef8c7da3c2",
-      measurementId: "G-9JCZ5HVH6E"
-    };
-
-    // 🔹 Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    // 🔹 Handle Google Sign-In
-    document.getElementById('googleSignIn').addEventListener('click', async () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        const result = await auth.signInWithPopup(provider);
-        const idToken = await result.user.getIdToken();
-
-        // 🔹 Send ID token to backend to create a session
-        const resp = await fetch('/sessionLogin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken })
-        });
-
-        if (resp.ok) {
-          window.location.href = '/'; // reload or redirect to the form page
-        } else {
-          const err = await resp.json();
-          alert("Sign-in failed: " + err.message);
-        }
-      } catch (error) {
-        console.error("Sign-in error:", error);
-        alert("Sign-in failed. Please try again.");
-      }
-    });
-  </script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
