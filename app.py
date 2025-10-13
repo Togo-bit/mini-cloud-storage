@@ -1,72 +1,92 @@
-# app.py
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+import pandas as pd
 import os
-import json
-from flask import Flask, render_template, request, session, redirect, url_for
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import firebase_admin
-from firebase_admin import credentials as fb_creds, auth as fb_auth
+from firebase_admin import credentials as fb_credentials, auth
 
+# ------------------------------------
+# Flask Configuration
+# ------------------------------------
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "change_this_in_production")
+app.secret_key = "your_secret_key_here"  # for Flask session handling
 
-# ---------- Google Sheets / service account ----------
-# Load service account from environment variable (Render)
-google_creds_json = os.getenv("GOOGLE_CREDENTIALS")
-creds_dict = json.loads(google_creds_json)
-# gspread auth
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-gcreds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-gclient = gspread.authorize(gcreds)
-sheet = gclient.open("form_responses").sheet1
+# ------------------------------------
+# Google Sheets Configuration
+# ------------------------------------
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive"
+]
+google_creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(google_creds)
+sheet = client.open("Form_Data").sheet1  # Replace with your Google Sheet name
 
-# ---------- Initialize firebase_admin using same service account ----------
-# (firebase_admin uses a service account to verify ID tokens)
-if not firebase_admin._apps:
-    fb_cred = fb_creds.Certificate(creds_dict)
-    firebase_admin.initialize_app(fb_cred)
+# ------------------------------------
+# Firebase Configuration (Google Login)
+# ------------------------------------
+firebase_cred = fb_credentials.Certificate("firebase_credentials.json")  # Your Firebase Service Account JSON
+firebase_admin.initialize_app(firebase_cred)
 
-# ---------- Routes ----------
+# ------------------------------------
+# Routes
+# ------------------------------------
+
+# 1️⃣ Landing Page or Form (based on session)
 @app.route('/')
 def index():
-    # If user not logged in, show a landing page with sign-in option
     if 'user' not in session:
-        return render_template('landing.html')  # contains "Sign in with Google" button
-    return render_template('form.html', user=session['user'])
+        return render_template('landing.html')  # shows Google Sign-In
+    return render_template('form.html', user=session['user'])  # shows form after login
 
+
+# 2️⃣ Handle Google Sign-In Token
 @app.route('/sessionLogin', methods=['POST'])
 def session_login():
-    # Frontend posts ID token in JSON body: { "idToken": "<token>" }
-    id_token = request.json.get('idToken')
     try:
-        decoded_token = fb_auth.verify_id_token(id_token)
-        # decoded_token contains uid, email, name, etc.
+        id_token = request.json.get('idToken')
+        decoded_token = auth.verify_id_token(id_token)
         session['user'] = {
-            'uid': decoded_token.get('uid'),
             'email': decoded_token.get('email'),
             'name': decoded_token.get('name')
         }
-        return {"status": "success"}, 200
+        return jsonify({'message': 'Login successful'})
     except Exception as e:
-        return {"status": "error", "message": str(e)}, 401
+        return jsonify({'message': str(e)}), 400
 
+
+# 3️⃣ Logout
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.clear()
     return redirect(url_for('index'))
 
+
+# 4️⃣ Handle Form Submission
 @app.route('/submit', methods=['POST'])
 def submit():
-    if 'user' not in session:
-        return redirect(url_for('index'))
+    try:
+        # Only allow if user is logged in
+        if 'user' not in session:
+            return jsonify({'message': 'Unauthorized'}), 403
 
-    name = request.form['name']
-    email = request.form['email']
-    feedback = request.form['feedback']
+        # Get form data
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
 
-    sheet.append_row([name, email, feedback])
-    return "✅ Form submitted successfully and saved to Google Sheets!"
+        # Append to Google Sheet
+        sheet.append_row([name, email, message])
 
+        return render_template('success.html', user=session['user'])
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+
+# ------------------------------------
+# Run Flask
+# ------------------------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
